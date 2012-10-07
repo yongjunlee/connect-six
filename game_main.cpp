@@ -9,6 +9,7 @@
 #include "tds.h"
 #include <iostream>
 #include <cstdio>
+#include <stack>
 using namespace std;
 
 Game_main::Game_main(QWidget *parent) :
@@ -86,9 +87,10 @@ void Game_main::paintEvent(QPaintEvent *event)
     if(track_x >=0 &&track_x<=18&&track_y<=18&& track_y >= 0)
     {
         drawTrack(track_x,track_y);
-        cout<<"track_x:"<<track_x<<endl;
+//        cout<<"track_x:"<<track_x<<endl;
     }
     whoIsNext(pos);
+    diffs(pos,pos_tmp);
     //下棋子
     drawChess(pos);//画棋子
     if(!is_over)
@@ -124,12 +126,16 @@ void Game_main::initData()
     track_y = -1;
     tmp_x = -1;
     tmp_y = -1;
+    tmpNode.x = -1;
+    tmpNode.y = -1;
+    tmpNode.value = -1;
     who_win =0;
     for(int i = 0; i<SCALE;i++)
     {
         for(int j = 0; j<SCALE;j++)
         {
             pos[i][j]=0;
+            pos_tmp[i][j]=0;
         }
     }
 }
@@ -563,14 +569,14 @@ void Game_main::drawTrack(int x, int y)
 
     target.setRect(START_X+WIDTH*i-WIDTH/2,START_Y+WIDTH*j-WIDTH/2,WIDTH,WIDTH);
     painter->drawRect(target);
-    cout<<"x:"<<x<<"y:"<<y<<endl;
+//    cout<<"x:"<<x<<"y:"<<y<<endl;
 }
 
 void Game_main::goBack()
 {
-    if(tmp_x >= 0 && tmp_y >=0)
+    if(!nodes.empty())
     {
-        switch(pos[tmp_x][tmp_y])
+        switch(nodes.top().value)
         {
         case 1:
             count_white--;
@@ -579,8 +585,31 @@ void Game_main::goBack()
             count_black--;
             break;
         }
-         pos[tmp_x][tmp_y] = 0;
+         pos[nodes.top().x][nodes.top().y] = 0;
+         pos_tmp[nodes.top().x][nodes.top().y] = 0;
+         nodes.pop();
+         repaint();
     }
-    cout<<"tmpx:"<<tmp_x<<" tmpy"<<tmp_y<<endl;
+//    cout<<"tmpx:"<<tmp_x<<" tmpy"<<tmp_y<<endl;
     repaint();
+}
+
+void Game_main::diffs(int p[SCALE][SCALE],int p_tmp[SCALE][SCALE])
+{
+    for(int i = 0;i<SCALE ; i++)
+    {
+        for(int j = 0;j<SCALE ; j++)
+        {
+            if(p[i][j] != p_tmp[i][j] && p[i][j]!=0)
+            {
+                tmpNode.x =i;
+                tmpNode.y = j;
+                tmpNode.value = p[i][j];
+                p_tmp[i][j] = p[i][j];
+                nodes.push(tmpNode);
+                cout<<"stack size:"<<nodes.size()<<endl;
+                cout<<nodes.top().x<<" "<<nodes.top().y<<" "<<nodes.top().value<<endl;
+            }
+        }
+    }
 }

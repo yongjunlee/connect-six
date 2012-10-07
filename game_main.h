@@ -21,6 +21,7 @@
 #include "playchess.h"
 #include "tds.h"
 #include <QTimer>
+#include <stack>
 
 #define WIDTH 26 //棋盘格子宽度
 #define SCALE 19 //棋盘格子个数
@@ -38,6 +39,7 @@
 #define BLACK_LABEL_Y 540
 #define WHITE_LABEL_LENGTH
 #define WHITE_LABEL_HEIGTH
+using namespace std;
 
 namespace Ui {
     class Game_main;
@@ -66,7 +68,7 @@ public:
     void whoWin();
     void whoIsNext(int p[SCALE][SCALE]);
     void drawTrack(int x,int y);
-
+    void diffs(int p[SCALE][SCALE],int p_tmp[SCALE][SCALE]);
 
     //定义数据
     bool is_start;//游戏是否开始
@@ -91,6 +93,14 @@ public:
     int pos[SCALE][SCALE]; //取值为1表示白色棋子，取值为2表示为黑色棋子，为0则无棋子
     int pos_tmp[SCALE][SCALE];
     int tmp_x,tmp_y;
+    typedef struct node
+    {
+        int x;
+        int y;
+        int value;
+    }Node;
+    stack<Node> nodes;
+    Node tmpNode;
 
 private:
     Ui::Game_main *ui;

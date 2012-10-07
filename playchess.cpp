@@ -159,7 +159,7 @@ playChess::node playChess::makenode(int i1,int j1,int i2,int j2,int score)
     return pt;
 }
 
- int playChess::putChesses(int p[19][19],int *count_white,int *count_black)
+ int playChess::putChesses(int p[SCALE][SCALE],int *count_white,int *count_black)
 {
     int i,j,MyColor;
     int cc[3]={0,0,0};//Count the curent number of each color
